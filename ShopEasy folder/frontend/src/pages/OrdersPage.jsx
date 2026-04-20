@@ -1,17 +1,52 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import Loader from '../components/Loader';
+import {
+  getOrderStatusBadgeClassName,
+  normalizeOrderStatus,
+} from '../utils/orderStatus';
 import { formatCurrency } from '../utils/format';
 
 function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const loadOrders = async () => {
+    const { data } = await api.get('/orders');
+    setOrders(data);
+  };
+
   useEffect(() => {
-    api
-      .get('/orders')
-      .then(({ data }) => setOrders(data))
-      .finally(() => setLoading(false));
+    let active = true;
+
+    loadOrders()
+      .catch(() => {
+        if (active) {
+          setOrders([]);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    const refreshOrders = () => {
+      if (document.visibilityState === 'visible') {
+        loadOrders().catch(() => {});
+      }
+    };
+
+    const intervalId = window.setInterval(refreshOrders, 15000);
+    window.addEventListener('focus', refreshOrders);
+    document.addEventListener('visibilitychange', refreshOrders);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener('focus', refreshOrders);
+      document.removeEventListener('visibilitychange', refreshOrders);
+    };
   }, []);
 
   if (loading) return <Loader label="Loading your orders..." />;
@@ -29,8 +64,8 @@ function OrdersPage() {
           <article key={order._id} className="rounded-2xl border border-slate-200 bg-white p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm text-slate-600">Order ID: {order._id}</p>
-              <p className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
-                {order.status}
+              <p className={`rounded-full px-3 py-1 text-xs font-semibold ${getOrderStatusBadgeClassName(order.status)}`}>
+                {normalizeOrderStatus(order.status)}
               </p>
             </div>
             <div className="mt-3 space-y-2 text-sm text-slate-700">
