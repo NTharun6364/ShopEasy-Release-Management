@@ -14,11 +14,3 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
-
-# Python artifacts
-__pycache__/
-*.pyc
-
-# Local debug scripts
-autogen-orchestrator/tests/_test_login.py
-autogen-orchestrator/tests/_test_login2.py

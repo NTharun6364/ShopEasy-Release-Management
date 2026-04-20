@@ -1,0 +1,17 @@
+[
+  {
+    "id": "PR-201",
+    "status": "Merged",
+    "linkedTicket": "REL-1001"
+  },
+  {
+    "id": "PR-202",
+    "status": "Pending Review",
+    "linkedTicket": "REL-1002"
+  },
+  {
+    "id": "PR-203",
+    "status": "Merged",
+    "linkedTicket": "REL-1003"
+  }
+]

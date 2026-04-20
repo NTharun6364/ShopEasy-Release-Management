@@ -1,0 +1,14 @@
+[
+  {
+    "ticketId": "REL-1001",
+    "result": "Pass"
+  },
+  {
+    "ticketId": "REL-1002",
+    "result": "Fail"
+  },
+  {
+    "ticketId": "REL-1003",
+    "result": "Pass"
+  }
+]

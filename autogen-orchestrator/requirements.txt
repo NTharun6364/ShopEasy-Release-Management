@@ -1,0 +1,8 @@
+pyautogen
+fastapi
+uvicorn
+python-dotenv
+requests
+pydantic
+selenium
+webdriver-manager

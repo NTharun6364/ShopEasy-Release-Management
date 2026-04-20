@@ -1,0 +1,23 @@
+[
+  {
+    "id": "REL-1001",
+    "title": "Login alignment issue",
+    "status": "Resolved",
+    "assignee": "Frontend",
+    "version": "v1.0.1"
+  },
+  {
+    "id": "REL-1002",
+    "title": "Cart total bug",
+    "status": "Open Bug",
+    "assignee": "Backend",
+    "version": "v1.0.1"
+  },
+  {
+    "id": "REL-1003",
+    "title": "Checkout whitespace issue",
+    "status": "Resolved",
+    "assignee": "UI Team",
+    "version": "v1.0.1"
+  }
+]
