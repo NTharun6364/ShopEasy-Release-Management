@@ -13,16 +13,26 @@ const getAllOrders = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
+    const normalizedStatus = status === 'Processing' ? 'Pending' : status;
+
+    if (!Order.ORDER_STATUSES.includes(normalizedStatus)) {
+      return res.status(400).json({
+        message: `Status must be one of: ${Order.ORDER_STATUSES.join(', ')}`,
+      });
+    }
+
     const order = await Order.findById(req.params.id);
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    order.status = status || order.status;
+    order.status = normalizedStatus;
     await order.save();
 
-    return res.status(200).json(order);
+    const updatedOrder = await Order.findById(order._id).populate('user', 'name email');
+
+    return res.status(200).json(updatedOrder);
   } catch (error) {
     return res.status(400).json({ message: 'Unable to update order status', error: error.message });
   }
