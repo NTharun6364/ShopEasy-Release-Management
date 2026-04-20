@@ -43,6 +43,13 @@ function LoginPage() {
           className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none ring-orange-200 focus:ring"
         />
 
+        <div className="flex items-center justify-between">
+          <div></div>
+          <Link to="/forgot-password" className="text-sm font-semibold text-orange-600 hover:text-orange-700">
+            Forgot Password?
+          </Link>
+        </div>
+
         {error && <p className="text-sm font-medium text-red-600">{error}</p>}
 
         <button

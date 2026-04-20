@@ -37,6 +37,15 @@ const userSchema = new mongoose.Schema(
       zipCode: { type: String, default: '' },
       country: { type: String, default: '' },
     },
+    resetToken: {
+      type: String,
+      default: null,
+      select: false,
+    },
+    resetTokenExpire: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
