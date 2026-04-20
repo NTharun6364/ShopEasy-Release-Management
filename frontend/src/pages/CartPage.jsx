@@ -32,7 +32,11 @@ function CartPage() {
                       type="number"
                       min={1}
                       value={item.quantity}
-                      onChange={(event) => updateQuantity(item.product._id, Number(event.target.value))}
+                      onChange={(event) => {
+                        const nextQuantity = Number(event.target.value);
+                        if (Number.isNaN(nextQuantity)) return;
+                        updateQuantity(item.product._id, nextQuantity);
+                      }}
                       className="w-24 rounded-lg border border-slate-300 px-2 py-1"
                     />
                     <button
@@ -59,7 +63,7 @@ function CartPage() {
             </div>
             <div className="mt-2 flex items-center justify-between text-base font-semibold text-slate-900">
               <span>Subtotal</span>
-              <span>{formatCurrency(summary.subtotal)}</span>
+              <span>{formatCurrency(summary.itemTotal)}</span>
             </div>
             <button
               type="button"

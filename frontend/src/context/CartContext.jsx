@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import api from '../api/axios';
 import { useAuth } from './AuthContext';
 
@@ -8,6 +8,7 @@ export function CartProvider({ children }) {
   const { isAuthenticated } = useAuth();
   const [cart, setCart] = useState({ items: [] });
   const [loading, setLoading] = useState(false);
+  const quantityUpdateSeqRef = useRef({});
 
   const refreshCart = async () => {
     if (!isAuthenticated) {
@@ -25,8 +26,30 @@ export function CartProvider({ children }) {
   };
 
   const updateQuantity = async (productId, quantity) => {
-    const { data } = await api.put(`/cart/${productId}`, { quantity });
-    setCart(data);
+    const nextQuantity = Math.max(1, Number(quantity) || 1);
+
+    // SR-2 fix
+    // Update local state first so item/subtotal/grand total refresh instantly.
+    setCart((prevCart) => ({
+      ...prevCart,
+      items: prevCart.items.map((item) =>
+        item.product._id === productId ? { ...item, quantity: nextQuantity } : item
+      ),
+    }));
+
+    const currentSeq = (quantityUpdateSeqRef.current[productId] || 0) + 1;
+    quantityUpdateSeqRef.current[productId] = currentSeq;
+
+    try {
+      const { data } = await api.put(`/cart/${productId}`, { quantity: nextQuantity });
+      if (quantityUpdateSeqRef.current[productId] === currentSeq) {
+        setCart(data);
+      }
+    } catch {
+      if (quantityUpdateSeqRef.current[productId] === currentSeq) {
+        await refreshCart();
+      }
+    }
   };
 
   const removeItem = async (productId) => {
@@ -47,9 +70,18 @@ export function CartProvider({ children }) {
 
   const summary = useMemo(() => {
     const itemCount = cart.items.reduce((count, item) => count + item.quantity, 0);
-    const subtotal = cart.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
-    return { itemCount, subtotal };
-  }, [cart]);
+    const itemTotal = cart.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+    const shipping = 0;
+    const subtotal = itemTotal;
+    const grandTotal = subtotal + shipping;
+
+    return {
+      itemCount,
+      itemTotal,
+      subtotal,
+      grandTotal,
+    };
+  }, [cart.items]);
 
   const value = useMemo(
     () => ({

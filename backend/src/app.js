@@ -11,7 +11,30 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
+const configuredOrigins = [process.env.CLIENT_URLS, process.env.CLIENT_URL]
+  .filter(Boolean)
+  .join(',');
+
+const allowedOrigins = Array.from(
+  new Set(
+    `${configuredOrigins},http://localhost:5173,http://localhost:5174`
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  )
+);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('CORS origin not allowed'));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(morgan('dev'));
 

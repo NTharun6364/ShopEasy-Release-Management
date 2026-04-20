@@ -130,7 +130,7 @@ function CheckoutPage() {
         </div>
         <div className="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 text-lg font-black text-slate-900">
           <span>Total</span>
-          <span>{formatCurrency(summary.subtotal)}</span>
+          <span>{formatCurrency(summary.grandTotal)}</span>
         </div>
       </aside>
     </div>
